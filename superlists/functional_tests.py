@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 import unittest
 
+
 class NewVisitorTest(unittest.TestCase):
     def setUp(self):
         binary = FirefoxBinary("C:/Program Files (x86)/Mozilla Firefox/firefox.exe")
