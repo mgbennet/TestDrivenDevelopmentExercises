@@ -1,13 +1,13 @@
 from contextlib import contextmanager
+from django.test import LiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
-import unittest
 
 
-class NewVisitorTest(unittest.TestCase):
+class NewVisitorTest(LiveServerTestCase):
     def setUp(self):
         binary = FirefoxBinary("C:/Program Files (x86)/Mozilla Firefox/firefox.exe")
         self.browser = webdriver.Firefox(firefox_binary=binary)
@@ -29,7 +29,7 @@ class NewVisitorTest(unittest.TestCase):
         self.assertIn(row_text, [row.text for row in rows])
 
     def test_can_start_list_and_retrieve_it_later(self):
-        self.browser.get("http://localhost:8000")
+        self.browser.get(self.live_server_url)
 
         self.assertIn("To-Do", self.browser.title)
         header_text = self.browser.find_element_by_tag_name("h1").text
