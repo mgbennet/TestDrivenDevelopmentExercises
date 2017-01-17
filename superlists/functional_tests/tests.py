@@ -88,7 +88,7 @@ class NewVisitorTest(LiveServerTestCase):
         inputbox.send_keys("Buy milk")
         inputbox.send_keys(Keys.ENTER)
         with self.wait_for_page_load(timeout=10):
-            self.check_for_row_in_list_table("Buy milk")
+            self.check_for_row_in_list_table("1: Buy milk")
 
         # Francis gets his own unique URL
         francis_list_url = self.browser.current_url
