@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from django.test import LiveServerTestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from selenium.webdriver.support.ui import WebDriverWait
@@ -7,13 +7,14 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 
 
-class NewVisitorTest(LiveServerTestCase):
+class NewVisitorTest(StaticLiveServerTestCase):
     def setUp(self):
         self.binary = FirefoxBinary("C:/Program Files (x86)/Mozilla Firefox/firefox.exe")
         self.browser = webdriver.Firefox(firefox_binary=self.binary)
         self.browser.implicitly_wait(3)
 
     def tearDown(self):
+        self.browser.refresh()
         self.browser.quit()
 
     @contextmanager
@@ -72,6 +73,7 @@ class NewVisitorTest(LiveServerTestCase):
 
         ## We use a new browser session to make sure that no information
         ## of Edith's is coming through from cookies etc
+        self.browser.refresh()
         self.browser.quit()
         self.browser = webdriver.Firefox(firefox_binary=self.binary)
 
@@ -110,7 +112,7 @@ class NewVisitorTest(LiveServerTestCase):
         self.assertAlmostEqual(
             inputbox.location["x"] + inputbox.size["width"] / 2,
             512,
-            delta=5
+            delta=7
         )
 
         inputbox.send_keys("testing")
@@ -120,5 +122,5 @@ class NewVisitorTest(LiveServerTestCase):
             self.assertAlmostEqual(
                 inputbox.location["x"] + inputbox.size["width"] / 2,
                 512,
-                delta=5
+                delta=7
             )
