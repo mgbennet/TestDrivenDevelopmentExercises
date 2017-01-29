@@ -5,9 +5,19 @@ from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
+import sys
 
 
 class NewVisitorTest(StaticLiveServerTestCase):
+    @classmethod
+    def setUpClass(cls):
+        for arg in sys.argv:
+            if "liveserver" in arg:
+                cls.server_url = "http://" + arg.split("=")[1]
+                return
+        super().setUpClass()
+        cls.server_url = cls.live_server_url
+
     def setUp(self):
         self.binary = FirefoxBinary("C:/Program Files (x86)/Mozilla Firefox/firefox.exe")
         self.browser = webdriver.Firefox(firefox_binary=self.binary)
@@ -30,7 +40,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
         self.assertIn(row_text, [row.text for row in rows])
 
     def test_can_start_a_list_for_one_user(self):
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
 
         self.assertIn("To-Do", self.browser.title)
         header_text = self.browser.find_element_by_tag_name("h1").text
@@ -57,7 +67,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
 
     def test_multiple_users_can_start_lists_at_different_urls(self):
         #Edith starts a new to do list
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         inputbox = self.browser.find_element_by_id("id_new_item")
         inputbox.send_keys("Buy peacock feathers")
         inputbox.send_keys(Keys.ENTER)
@@ -77,9 +87,8 @@ class NewVisitorTest(StaticLiveServerTestCase):
         self.browser.quit()
         self.browser = webdriver.Firefox(firefox_binary=self.binary)
 
-        # Francis visits the home page.  There is no sign of Edith's
-        # list
-        self.browser.get(self.live_server_url)
+        # Francis visits the home page.  There is no sign of Edith's list
+        self.browser.get(self.server_url)
         page_text = self.browser.find_element_by_tag_name('body').text
         self.assertNotIn("Buy peacock feathers", page_text)
         self.assertNotIn("make a fly", page_text)
@@ -105,14 +114,14 @@ class NewVisitorTest(StaticLiveServerTestCase):
         # Satisfied, they both go back to sleep
 
     def test_layout_and_styling(self):
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         self.browser.set_window_size(1024, 768)
 
         inputbox = self.browser.find_element_by_id("id_new_item")
         self.assertAlmostEqual(
             inputbox.location["x"] + inputbox.size["width"] / 2,
             512,
-            delta=7
+            delta=8
         )
 
         inputbox.send_keys("testing")
@@ -122,5 +131,5 @@ class NewVisitorTest(StaticLiveServerTestCase):
             self.assertAlmostEqual(
                 inputbox.location["x"] + inputbox.size["width"] / 2,
                 512,
-                delta=7
+                delta=8
             )
